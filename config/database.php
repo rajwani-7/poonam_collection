@@ -1,45 +1,72 @@
 <?php
 // Database Configuration
-define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'poonam_collection');
+if (!function_exists('env_value')) {
+    function env_value($key, $default = null) {
+        $value = getenv($key);
+
+        if ($value === false && isset($_ENV[$key])) {
+            $value = $_ENV[$key];
+        }
+
+        if ($value === false && isset($_SERVER[$key])) {
+            $value = $_SERVER[$key];
+        }
+
+        return $value === false ? $default : $value;
+    }
+}
+
+define('DB_HOST', env_value('DB_HOST', 'localhost'));
+define('DB_PORT', env_value('DB_PORT', ''));
+define('DB_USER', env_value('DB_USER', 'root'));
+define('DB_PASS', env_value('DB_PASS', ''));
+define('DB_NAME', env_value('DB_NAME', 'poonam_collection'));
+define('DB_CHARSET', env_value('DB_CHARSET', 'utf8mb4'));
+define('DB_AUTO_CREATE', filter_var(env_value('DB_AUTO_CREATE', 'false'), FILTER_VALIDATE_BOOLEAN));
 
 class Database {
     private $host = DB_HOST;
+    private $port = DB_PORT;
     private $user = DB_USER;
     private $pass = DB_PASS;
     private $dbname = DB_NAME;
+    private $charset = DB_CHARSET;
+    private $autoCreate = DB_AUTO_CREATE;
     private $conn;
+
+    private function buildDsn($includeDatabase = true) {
+        $dsn = 'mysql:host=' . $this->host;
+
+        if ($this->port !== '') {
+            $dsn .= ';port=' . $this->port;
+        }
+
+        if ($includeDatabase) {
+            $dsn .= ';dbname=' . $this->dbname;
+        }
+
+        if ($this->charset !== '') {
+            $dsn .= ';charset=' . $this->charset;
+        }
+
+        return $dsn;
+    }
     
     public function connect() {
         $this->conn = null;
         
         try {
-            $this->conn = new PDO(
-                'mysql:host=' . $this->host . ';dbname=' . $this->dbname,
-                $this->user,
-                $this->pass
-            );
+            $this->conn = new PDO($this->buildDsn(), $this->user, $this->pass);
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
         } catch(PDOException $e) {
-            // 1049 = Unknown database. Create it automatically and reconnect.
-            if ((int)$e->getCode() === 1049 || stripos($e->getMessage(), 'Unknown database') !== false) {
+            if ($this->autoCreate && ((int)$e->getCode() === 1049 || stripos($e->getMessage(), 'Unknown database') !== false)) {
                 try {
-                    $bootstrap = new PDO(
-                        'mysql:host=' . $this->host,
-                        $this->user,
-                        $this->pass
-                    );
+                    $bootstrap = new PDO($this->buildDsn(false), $this->user, $this->pass);
                     $bootstrap->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                     $bootstrap->exec('CREATE DATABASE IF NOT EXISTS `' . $this->dbname . '` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci');
 
-                    $this->conn = new PDO(
-                        'mysql:host=' . $this->host . ';dbname=' . $this->dbname,
-                        $this->user,
-                        $this->pass
-                    );
+                    $this->conn = new PDO($this->buildDsn(), $this->user, $this->pass);
                     $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                     $this->conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
                 } catch (PDOException $inner) {

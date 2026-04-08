@@ -64,23 +64,24 @@ Before installation, ensure you have:
    - For WAMP: `C:\wamp\www\pc`
 
 ### Step 3: Create Database
-1. Open phpMyAdmin: http://localhost/phpmyadmin
-2. Create a new database named `poonam_collection`
+1. Open the MySQL tool from your hosting panel.
+2. Create the database and user for this site.
 3. Import the database:
-   - Click on the `poonam_collection` database
-   - Go to "Import" tab
-   - Select `database/setup.sql` file
+   - Open the new database
+   - Go to the "Import" tab
+   - Select `database/setup.sql`
    - Click "Go"
 
 ### Step 4: Configure Database Connection
 1. Open `config/database.php`
-2. Update database credentials if needed:
+2. Update the hosting credentials if needed:
 ```php
-define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'poonam_collection');
+define('DB_HOST', 'your-mysql-host');
+define('DB_USER', 'your-mysql-user');
+define('DB_PASS', 'your-mysql-password');
+define('DB_NAME', 'your-mysql-database');
 ```
+3. If your site is not in the domain root, set `APP_BASE_URL` to your full site URL.
 
 ### Step 5: Create Upload Directory
 1. Create an `uploads` folder in the project root
@@ -96,6 +97,12 @@ Open: http://localhost/pc/
 2. Default credentials:
    - **Username:** admin
    - **Password:** admin123
+
+### InfinityFree Notes
+- Upload the project files to your hosting account.
+- Import `database/setup.sql` into the MySQL database created in your panel.
+- Update `config/database.php` with the InfinityFree database host, username, password, and database name.
+- `config/config.php` now detects the site URL automatically, but you can override it with `APP_BASE_URL` if needed.
 
 ## 📂 Project Structure
 

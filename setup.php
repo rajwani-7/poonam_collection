@@ -1,3 +1,6 @@
+<?php
+require_once __DIR__ . '/config/config.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -133,23 +136,19 @@
         
         <div class="step">
             <h3>Step 2: Create Database</h3>
-            <p>1. Open phpMyAdmin: <code>http://localhost/phpmyadmin</code></p>
-            <p>2. Create database: <code>poonam_collection</code></p>
+            <p>1. Open your hosting control panel database tool.</p>
+            <p>2. Create the MySQL database and user for this site.</p>
             <p>3. Import: <code>database/setup.sql</code></p>
             
             <?php
-            $db_host = 'localhost';
-            $db_user = 'root';
-            $db_pass = '';
-            $db_name = 'poonam_collection';
-            
-            $conn = @mysqli_connect($db_host, $db_user, $db_pass, $db_name);
+            $db_port = DB_PORT !== '' ? (int) DB_PORT : 3306;
+            $conn = @mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME, $db_port);
             
             if ($conn) {
                 echo '<div class="status success"><span class="icon">✓</span> Database connection successful!</div>';
                 mysqli_close($conn);
             } else {
-                echo '<div class="status error"><span class="icon">✗</span> Cannot connect to database. Please create it first.</div>';
+                echo '<div class="status error"><span class="icon">✗</span> Cannot connect to the configured database. Check the MySQL host, username, password, and database name.</div>';
             }
             ?>
         </div>
@@ -179,12 +178,12 @@
         <div class="step">
             <h3>Step 4: Configure Settings</h3>
             <p>Database configuration is in: <code>config/database.php</code></p>
-            <p>General settings in: <code>config/config.php</code></p>
+            <p>General settings and site URL detection are in: <code>config/config.php</code></p>
         </div>
         
         <div class="credentials">
             <h3>🔐 Admin Login Credentials</h3>
-            <p><strong>URL:</strong> <code>http://localhost/pc/admin/</code></p>
+            <p><strong>URL:</strong> <code>admin/</code> from your deployed domain</p>
             <p><strong>Username:</strong> <code>admin</code></p>
             <p><strong>Password:</strong> <code>admin123</code></p>
         </div>

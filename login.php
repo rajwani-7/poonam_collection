@@ -2,14 +2,14 @@
 require_once 'config/config.php';
 
 if (isset($_SESSION['customer_logged_in']) && $_SESSION['customer_logged_in'] === true) {
-    header('Location: checkout.php');
+    header('Location: index.html');
     exit;
 }
 
-$redirect = isset($_GET['redirect']) ? trim($_GET['redirect']) : 'checkout.php';
+$redirect = isset($_GET['redirect']) ? trim($_GET['redirect']) : 'index.html';
 $allowedRedirects = ['checkout.php', 'index.html'];
 if (!in_array($redirect, $allowedRedirects, true)) {
-    $redirect = 'checkout.php';
+    $redirect = 'index.html';
 }
 ?>
 <!DOCTYPE html>
@@ -33,7 +33,7 @@ if (!in_array($redirect, $allowedRedirects, true)) {
             </div>
 
             <h2 class="auth-title">Login</h2>
-            <p class="auth-subtitle">Login to continue to checkout.</p>
+            <p class="auth-subtitle">Login to continue to the home page.</p>
 
             <div class="alert error" id="errorBox"></div>
 

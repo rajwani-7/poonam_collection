@@ -65,10 +65,12 @@ Open your browser and go to:
 http://localhost/pc/setup.php
 ```
 This will:
-- Create the database `poonam_collection`
-- Create all tables
+- Check the configured MySQL connection
+- Create all tables from `database/setup.sql`
 - Insert sample products
 - Create admin user
+
+For InfinityFree or other shared hosting, import `database/setup.sql` manually in your hosting panel and set the MySQL host, database name, username, and password in `config/database.php`.
 
 ### 3. Access the Website
 **Frontend (Customer view):**
