@@ -16,11 +16,11 @@ if (!function_exists('env_value')) {
     }
 }
 
-define('DB_HOST', env_value('DB_HOST', 'localhost'));
-define('DB_PORT', env_value('DB_PORT', ''));
-define('DB_USER', env_value('DB_USER', 'root'));
-define('DB_PASS', env_value('DB_PASS', ''));
-define('DB_NAME', env_value('DB_NAME', 'poonam_collection'));
+define('DB_HOST', env_value('DB_HOST', 'sql204.infinityfree.com'));
+define('DB_PORT', env_value('DB_PORT', '3306'));
+define('DB_USER', env_value('DB_USER', 'if0_41614539')); // ✅ FIXED
+define('DB_PASS', env_value('DB_PASS', '0XBdleoYTpyZ4'));
+define('DB_NAME', env_value('DB_NAME', 'if0_41614539_poonam_collection'));
 define('DB_CHARSET', env_value('DB_CHARSET', 'utf8mb4'));
 define('DB_AUTO_CREATE', filter_var(env_value('DB_AUTO_CREATE', 'false'), FILTER_VALIDATE_BOOLEAN));
 
@@ -158,22 +158,27 @@ class Database {
                 )"
             );
 
+            // Default Admin User
             $adminHash = '$2y$10$DfLR17HGb0SQ2BBj98ka6.8ud5v44GLa3GTIu0W4ZKXVIFaZ1dxRe';
+
             $stmt = $this->conn->prepare(
                 'INSERT INTO admin_users (username, password, email, full_name)
                  VALUES (:username, :password, :email, :full_name)
                  ON DUPLICATE KEY UPDATE password = VALUES(password), full_name = VALUES(full_name)'
             );
+
             $username = 'admin';
             $email = 'admin@poonamcollection.com';
             $fullName = 'Admin User';
+
             $stmt->bindParam(':username', $username);
             $stmt->bindParam(':password', $adminHash);
             $stmt->bindParam(':email', $email);
             $stmt->bindParam(':full_name', $fullName);
             $stmt->execute();
+
         } catch (PDOException $e) {
-            // Keep connect resilient; callers will handle unavailable schema if needed.
+            // Silent fail to keep app running
         }
     }
 }
